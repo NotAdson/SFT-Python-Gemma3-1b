@@ -18,17 +18,17 @@ training:
   learning_rate: 3.0e-4
   weight_decay: 0.01
   lr_scheduler_type: "cosine"
-  warmup_steps: 100
   logging_steps: 10
+  eval_strategy: "steps"
+  eval_steps: 250
+  save_strategy: "steps"
+  save_steps: 250
+  warmup_steps: 200
   num_train_epochs: 5
   max_steps: -1
   max_grad_norm: 1.0
   fp16: true
   bf16: false
-  eval_strategy: "steps"
-  eval_steps: 10
-  save_strategy: "steps"
-  save_steps: 10
   load_best_model_at_end: true
   metric_for_best_model: "eval_loss"
   push_to_hub: false
