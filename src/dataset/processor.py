@@ -33,7 +33,7 @@ class DatasetProcessor(AbstractDatasetProcessor):
 
             return {"text": self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=False)}
 
-        cleaned_dataset = dataset.filter(lambda example: example['id'] < 200)
+        cleaned_dataset = dataset.filter(lambda example: example['id'] >= 200)
 
         return cleaned_dataset.map(formatting_prompts_func)
 
