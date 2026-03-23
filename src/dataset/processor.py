@@ -10,7 +10,8 @@ class DatasetProcessor(AbstractDatasetProcessor):
 
     def load_dataset(self, path=None):
         dataset_path = path if path else self.config['dataset']['path']
-        dataset = load_dataset(dataset_path, "main", split="train")
+        dataset = load_dataset(dataset_path, "default", split="train")
+
         df = dataset.to_pandas()
         df['id'] = range(len(df))
         return Dataset.from_pandas(df)
