@@ -1,3 +1,9 @@
-user_prompt = lambda question_text: f"""{question_text}"""
+def user_prompt(instruction:str, input:str) -> str:
+    if input in ['Not applicable', '']:
+        return f"""{instruction}"""
 
-model_prompt = lambda trace: f"""{trace}"""
+    return f"""{instruction}\ninput: {input}"""
+
+model_prompt = lambda output: f"""{output}"""
+
+instruction_prompt = lambda : f"""Act as an expert Python developer. Write a script to solve the task below. You must output only the raw, executable Python code."""

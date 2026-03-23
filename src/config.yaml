@@ -5,7 +5,7 @@ model:
   load_in_4bit: true
 
 dataset:
-  path: "openai/gsm8k"
+  path: "iamtarun/python_code_instructions_18k_alpaca"
   train_test_split:
     test_size: 0.1
     shuffle: true
