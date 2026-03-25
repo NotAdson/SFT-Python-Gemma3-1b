@@ -36,7 +36,7 @@ def main():
     # Load base model
     model = AutoModelForCausalLM.from_pretrained(
         args.model_id,
-        torch_dtype=torch.float16 if device == "cuda" else torch.float32,
+        torch_dtype=torch.float32,
         device_map="auto" if device == "cuda" else None
     )
 
