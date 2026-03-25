@@ -22,9 +22,9 @@ def main():
     parser.add_argument("--model_id", type=str, default="unsloth/gemma-3-1b-it-unsloth-bnb-4bit", help="Base model ID")
     parser.add_argument("--adapter_id", type=str, default="adson-silva/python-gemma3-1b", help="LoRA adapter ID")
     parser.add_argument("--dataset_id", type=str, default="iamtarun/python_code_instructions_18k_alpaca", help="Dataset ID")
-    parser.add_argument("--num_examples", type=int, default=200, help="Number of examples to benchmark")
+    parser.add_argument("--num_examples", type=int, default=400, help="Number of examples to benchmark")
     parser.add_argument("--max_new_tokens", type=int, default=512, help="Max tokens to generate")
-    parser.add_argument("--output_file", type=str, default="results.csv", help="File to save results")
+    parser.add_argument("--output_file", type=str, default="results.json", help="File to save results")
     args = parser.parse_args()
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -47,7 +47,11 @@ def main():
     print(f"Loading dataset: {args.dataset_id}...")
     dataset = load_dataset(args.dataset_id, split="train")
     
-    # Take the first N examples (the ones excluded from training)
+    # Filter dataset to only use examples with valid syntax in original 'output'
+    print("Filtering dataset for valid syntax...")
+    dataset = dataset.filter(lambda example: check_syntax(example.get('output', '')))
+    
+    # Take the first N examples
     eval_data = dataset.select(range(min(args.num_examples, len(dataset))))
 
     results = []
