@@ -48,12 +48,12 @@ def main():
     print(f"Loading dataset: {args.dataset_id}...")
     dataset = load_dataset(args.dataset_id, split="train")
     
-    # Filter dataset to only use examples with valid syntax in original 'output'
-    print("Filtering dataset for valid syntax...")
-    dataset = dataset.filter(lambda example: check_syntax(example.get('output', '')))
-    
-    # Take the first N examples
+    # Take the first N examples from the original dataset
     eval_data = dataset.select(range(min(args.num_examples, len(dataset))))
+    
+    # Filter only those N examples for valid syntax
+    print(f"Filtering {len(eval_data)} examples for valid syntax...")
+    eval_data = eval_data.filter(lambda example: check_syntax(example.get('output', '')))
 
     results = []
     correct_syntax = 0
