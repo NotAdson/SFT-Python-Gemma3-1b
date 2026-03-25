@@ -22,7 +22,7 @@ def main():
     parser.add_argument("--model_id", type=str, default="unsloth/gemma-3-1b-it-unsloth-bnb-4bit", help="Base model ID")
     parser.add_argument("--adapter_id", type=str, default="adson-silva/python-gemma3-1b", help="LoRA adapter ID")
     parser.add_argument("--dataset_id", type=str, default="iamtarun/python_code_instructions_18k_alpaca", help="Dataset ID")
-    parser.add_argument("--num_examples", type=int, default=400, help="Number of examples to benchmark")
+    parser.add_argument("--num_examples", type=int, default=500, help="Number of examples to benchmark")
     parser.add_argument("--max_new_tokens", type=int, default=512, help="Max tokens to generate")
     parser.add_argument("--output_file", type=str, default="results.json", help="File to save results")
     args = parser.parse_args()
