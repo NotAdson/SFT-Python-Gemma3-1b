@@ -36,12 +36,13 @@ def main():
     # Load base model
     model = AutoModelForCausalLM.from_pretrained(
         args.model_id,
-        torch_dtype=torch.float32,
+        torch_dtype=torch.bfloat16,
         device_map="auto" if device == "cuda" else None
     )
 
     print(f"Loading LoRA adapters: {args.adapter_id}...")
     model = PeftModel.from_pretrained(model, args.adapter_id)
+    model.to(torch.bfloat16)
     model.eval()
 
     print(f"Loading dataset: {args.dataset_id}...")

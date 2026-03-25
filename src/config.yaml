@@ -1,7 +1,7 @@
 model:
   name: "unsloth/gemma-3-1b-it-unsloth-bnb-4bit"
   max_seq_length: 2048
-  dtype: "float32" # or float16, bfloat16
+  dtype: "bfloat16" # or float16, bfloat16
   load_in_4bit: true
 
 dataset:
@@ -28,7 +28,7 @@ training:
   max_steps: -1
   max_grad_norm: 1.0
   fp16: false
-  bf16: false
+  bf16: true
   load_best_model_at_end: true
   metric_for_best_model: "eval_loss"
   push_to_hub: false
