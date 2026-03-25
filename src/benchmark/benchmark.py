@@ -1,5 +1,3 @@
-import os
-import ast
 import torch
 import argparse
 import pandas as pd
@@ -7,15 +5,8 @@ from tqdm import tqdm
 from datasets import load_dataset
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from peft import PeftModel
-
-# Original prompts from SFT-Python-Gemma3-1b
-def user_prompt(instruction: str, input_text: str) -> str:
-    if input_text in ['Not applicable', '', None]:
-        return f"{instruction}"
-    return f"{instruction}\ninput: {input_text}"
-
-def instruction_prompt() -> str:
-    return "Act as an expert Python developer. Write a script to solve the task below. You must output only the raw, executable Python code."
+from prompts.train_prompts import user_prompt, instruction_prompt
+from utils.syntax import check_syntax
 
 def format_inference_prompt(instruction: str, input_text: str, tokenizer) -> str:
     prompt_text = user_prompt(instruction, input_text)
@@ -25,14 +16,6 @@ def format_inference_prompt(instruction: str, input_text: str, tokenizer) -> str
     ]
     return tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
 
-def check_syntax(code: str) -> bool:
-    try:
-        ast.parse(code)
-        return True
-    except SyntaxError:
-        return False
-    except Exception:
-        return False
 
 def main():
     parser = argparse.ArgumentParser(description="Benchmark Python Gemma-3-1b Syntax Correctness")
@@ -86,17 +69,9 @@ def main():
                 pad_token_id=tokenizer.eos_token_id
             )
         
-        # Extract only the generated part
         generated_code = tokenizer.decode(outputs[0][inputs.input_ids.shape[1]:], skip_special_tokens=True)
         
-        # Clean up code blocks if model included them despite instructions
-        if "```python" in generated_code:
-            generated_code = generated_code.split("```python")[1].split("```")[0]
-        elif "```" in generated_code:
-            generated_code = generated_code.split("```")[1].split("```")[0]
-            
-        is_valid = check_syntax(generated_code)
-        if is_valid:
+        if is_valid:=check_syntax(generated_code):
             correct_syntax += 1
             
         results.append({
@@ -107,7 +82,6 @@ def main():
             "is_valid_syntax": is_valid
         })
 
-    # Save results
     df = pd.DataFrame(results)
     df.to_json(args.output_file, index=False)
     
