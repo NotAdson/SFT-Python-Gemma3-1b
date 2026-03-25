@@ -51,8 +51,6 @@ def main():
     dataset_processor = DatasetProcessor(config, tokenizer)
     raw_dataset = dataset_processor.load_dataset()
     formatted_dataset = dataset_processor.format_dataset(raw_dataset)
-    print(len(formatted_dataset), "examples after formatting.")
-    exit()
     split_dataset = dataset_processor.split_dataset(formatted_dataset)
     train_dataset = split_dataset["train"]
     eval_dataset = split_dataset["test"]
