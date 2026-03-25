@@ -28,7 +28,7 @@ training:
   max_steps: -1
   max_grad_norm: 1.0
   fp16: false
-  bf16: true
+  bf16: false
   load_best_model_at_end: true
   metric_for_best_model: "eval_loss"
   push_to_hub: false
