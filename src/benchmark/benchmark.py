@@ -19,7 +19,7 @@ def format_inference_prompt(instruction: str, input_text: str, tokenizer) -> str
 
 def main():
     parser = argparse.ArgumentParser(description="Benchmark Python Gemma-3-1b Syntax Correctness")
-    parser.add_argument("--model_id", type=str, default="unsloth/gemma-3-1b-it-unsloth-bnb-4bit", help="Base model ID")
+    parser.add_argument("--model_id", type=str, default="google/gemma-3-1b-it", help="Base model ID")
     parser.add_argument("--adapter_id", type=str, default="adson-silva/python-gemma3-1b", help="LoRA adapter ID")
     parser.add_argument("--dataset_id", type=str, default="iamtarun/python_code_instructions_18k_alpaca", help="Dataset ID")
     parser.add_argument("--num_examples", type=int, default=500, help="Number of examples to benchmark")
