@@ -1,6 +1,6 @@
 model:
   name: "unsloth/gemma-3-1b-it-unsloth-bnb-4bit"
-  max_seq_length: 2048
+  max_seq_length: 1024
   dtype: "bfloat16" # or float16, bfloat16
   load_in_4bit: true
 
@@ -20,9 +20,9 @@ training:
   lr_scheduler_type: "cosine"
   logging_steps: 10
   eval_strategy: "steps"
-  eval_steps: 50
+  eval_steps: 250
   save_strategy: "steps"
-  save_steps: 50
+  save_steps: 250
   warmup_steps: 200
   num_train_epochs: 2
   max_steps: -1
@@ -39,14 +39,14 @@ training:
     threshold: 0.0
 
 peft:
-  r: 64
-  lora_alpha: 64
+  r: 128
+  lora_alpha: 128
   lora_dropout: 0.05
   bias: "none"
   use_gradient_checkpointing: true
   random_state: 3407
 
 output:
-  output_dir: "/app/output"
+  output_dir: "./output"
   save_dataset: false
   save_config: true
