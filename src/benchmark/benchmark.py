@@ -21,7 +21,7 @@ def run_benchmark(model, tokenizer, dataset):
 
     print(f"Running benchmark on {len(dataset)} examples...")
     for i in tqdm(range(max(10, len(dataset)))):
-        print(i)
+        print(dataset[i])
 
 def main():
     config = load_config()
