@@ -1,7 +1,7 @@
 from datasets import load_dataset, Dataset
-from core.base import AbstractDatasetProcessor
-from prompts.train_prompts import user_prompt, model_prompt, instruction_prompt
-from utils.syntax import check_syntax
+from src.core.base import AbstractDatasetProcessor
+from src.prompts.train_prompts import user_prompt, model_prompt, instruction_prompt
+from src.utils.syntax import check_syntax
 
 class DatasetProcessor(AbstractDatasetProcessor):
     def __init__(self, config, tokenizer):
@@ -33,8 +33,7 @@ class DatasetProcessor(AbstractDatasetProcessor):
 
             return {"text": self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=False)}
 
-        cleaned_dataset = dataset.filter(lambda example: example['id'] >= 500)
-        cleaned_dataset = cleaned_dataset.filter(lambda example: check_syntax(example['output']))
+        cleaned_dataset = dataset.filter(lambda example: check_syntax(example['output']))
 
         return cleaned_dataset.map(formatting_prompts_func)
 
