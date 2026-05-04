@@ -23,7 +23,8 @@ def run_benchmark(config, model, tokenizer, dataset):
     formatted_dataset = dataset_processor.format_dataset(dataset)
     print(f"Running benchmark on {len(formatted_dataset)} examples...")
     for i in tqdm(range(max(10, len(formatted_dataset)))):
-        response = model.generate(formatted_dataset[i]['text'], max_new_tokens=1024)
+        tokenized_input = tokenizer(formatted_dataset[i]['text'], return_tensors="pt").to(model.device)
+        response = model.generate(tokenized_input, max_new_tokens=1024)
         print(response)
 
 def main():
