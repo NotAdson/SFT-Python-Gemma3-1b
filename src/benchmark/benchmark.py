@@ -8,6 +8,7 @@ from unsloth import FastLanguageModel
 from src.dataset.processor import DatasetProcessor
 from src.prompts.train_prompts import user_prompt, instruction_prompt
 from src.utils.syntax import check_syntax
+from transformers import TextStreamer
 
 def load_config(path="src/config.yaml"):
     with open(path, "r") as f:
@@ -22,7 +23,8 @@ def run_benchmark(config, model, tokenizer, dataset):
     points = 0
     for i in tqdm(range(max(10, len(formatted_dataset)))):
         tokenized_input = tokenizer(formatted_dataset[i]['text'], return_tensors="pt")
-        response = model.generate(tokenized_input['input_ids'], max_new_tokens=1024)
+        text_streamer = TextStreamer(tokenizer)
+        response = model.generate(tokenized_input['input_ids'], streamer=text_streamer, max_new_tokens=1024)
         print(response)
 
     return points / len(formatted_dataset) * 100
