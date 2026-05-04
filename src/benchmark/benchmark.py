@@ -22,9 +22,7 @@ def run_benchmark(config, model, tokenizer, dataset):
     points = 0
     for i in tqdm(range(max(10, len(formatted_dataset)))):
         tokenized_input = tokenizer(formatted_dataset[i]['text'], return_tensors="pt")
-        print(tokenized_input['input_ids'])
-        print(type(tokenized_input['input_ids']))
-        response = model.generate(tokenized_input, max_new_tokens=1024)
+        response = model.generate(tokenized_input['input_ids'], max_new_tokens=1024)
         print(response)
 
     return points / len(formatted_dataset) * 100
