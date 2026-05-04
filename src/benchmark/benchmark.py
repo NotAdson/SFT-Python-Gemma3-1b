@@ -21,10 +21,13 @@ def run_benchmark(config, model, tokenizer, dataset):
     formatted_dataset = dataset_processor.format_dataset(dataset)
     print(f"Running benchmark on {len(formatted_dataset)} examples...")
     points = 0
-    for i in tqdm(range(max(10, len(formatted_dataset)))):
-        tokenized_input = tokenizer(formatted_dataset[i]['text'], return_tensors="pt")
-        text_streamer = TextStreamer(tokenizer)
-        response = model.generate(tokenized_input['input_ids'], streamer=text_streamer, max_new_tokens=1024)
+    text_streamer = TextStreamer(tokenizer)
+
+    tokenized_inputs = list()
+    for i in range(len(formatted_dataset)):
+        tokenized_inputs.append(tokenizer(formatted_dataset[i]['text'], return_tensors="pt"))
+    for i in tqdm(range(max(10, len(tokenized_inputs)))):
+        response = model.generate(tokenized_inputs[i], streamer=text_streamer, max_new_tokens=1024)
         print(response)
 
     return points / len(formatted_dataset) * 100
