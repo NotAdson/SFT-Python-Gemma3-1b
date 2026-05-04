@@ -14,18 +14,18 @@ def load_config(path="src/config.yaml"):
         return yaml.safe_load(f)
 
 def run_benchmark(config, model, tokenizer, dataset):
-    results = []
-    correct_syntax = 0
     dataset_processor = DatasetProcessor(config, tokenizer)
     
     FastLanguageModel.for_inference(model)
-
     formatted_dataset = dataset_processor.format_dataset(dataset)
     print(f"Running benchmark on {len(formatted_dataset)} examples...")
+    points = 0
     for i in tqdm(range(max(10, len(formatted_dataset)))):
         tokenized_input = tokenizer(formatted_dataset[i]['text'], return_tensors="pt")
         response = model.generate(tokenized_input, max_new_tokens=1024)
         print(response)
+
+    return points / len(formatted_dataset) * 100
 
 def main():
     config = load_config()
@@ -58,10 +58,11 @@ def main():
         score = run_benchmark(config, model, model_tokenizer if name == "Fine-tuned" else tokenizer, dataset)
         print(f"{name} Model Score: {score:.2f}%")
         
+        """
         if name == "Fine-tuned":
             pd.DataFrame(results).to_json("benchmark_results.json", index=False)
             print("Results saved to benchmark_results.json")
-        
+        """
         del model
         torch.cuda.empty_cache()
 
