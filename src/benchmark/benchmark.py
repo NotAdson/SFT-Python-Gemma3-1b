@@ -25,7 +25,7 @@ def run_benchmark(config, model, tokenizer, dataset):
 
     tokenized_inputs = list()
     for i in range(len(formatted_dataset)):
-        tokenized_inputs.append(tokenizer(formatted_dataset[i]['text'], return_tensors="pt"))
+        tokenized_inputs.append(tokenizer(formatted_dataset[i]['text'], return_tensors="pt")['inputs_ids'])
     for i in tqdm(range(max(10, len(tokenized_inputs)))):
         response = model.generate(tokenized_inputs[i], streamer=text_streamer, max_new_tokens=1024)
         print(response)
