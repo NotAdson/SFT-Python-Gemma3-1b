@@ -20,7 +20,7 @@ def run_benchmark(config, model, tokenizer, dataset):
     
     FastLanguageModel.for_inference(model)
 
-    formatted_dataset = dataset_processor.format_dataset(dataset[i])
+    formatted_dataset = dataset_processor.format_dataset(dataset)
     print(f"Running benchmark on {len(dataset)} examples...")
     for i in tqdm(range(max(10, len(formatted_dataset)))):
         response = model.generate(formatted_dataset[i]['text'], max_new_tokens=1024)
