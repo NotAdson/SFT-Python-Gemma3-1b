@@ -13,15 +13,18 @@ def load_config(path="src/config.yaml"):
     with open(path, "r") as f:
         return yaml.safe_load(f)
 
-def run_benchmark(model, tokenizer, dataset):
+def run_benchmark(config, model, tokenizer, dataset):
     results = []
     correct_syntax = 0
+    dataset_processor = DatasetProcessor(config, tokenizer)
     
     FastLanguageModel.for_inference(model)
 
+    formatted_dataset = dataset_processor.format_dataset(dataset[i])
     print(f"Running benchmark on {len(dataset)} examples...")
-    for i in tqdm(range(max(10, len(dataset)))):
-        print(dataset[i])
+    for i in tqdm(range(max(10, len(formatted_dataset)))):
+        response = model.generate(formatted_dataset[i]['text'], max_new_tokens=1024)
+
 
 def main():
     config = load_config()
@@ -51,7 +54,7 @@ def main():
             
         print(f"\n--- Benchmarking {name} Model: {path} ---")
         model, model_tokenizer = FastLanguageModel.from_pretrained(model_name=path, **model_params)
-        score, results = run_benchmark(model, model_tokenizer if name == "Fine-tuned" else tokenizer, dataset)
+        score = run_benchmark(config, model, model_tokenizer if name == "Fine-tuned" else tokenizer, dataset)
         print(f"{name} Model Score: {score:.2f}%")
         
         if name == "Fine-tuned":
