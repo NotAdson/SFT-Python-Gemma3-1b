@@ -5,6 +5,7 @@ import torch
 from tqdm import tqdm
 from unsloth import FastLanguageModel
 from src.dataset.processor import DatasetProcessor
+from src.prompts.train_prompts import user_prompt, instruction_prompt
 from src.utils.syntax import check_syntax
 
 
@@ -13,21 +14,38 @@ def load_config(path="src/config.yaml"):
         return yaml.safe_load(f)
 
 
-def evaluate(model, tokenizer, dataset, n_samples: int) -> float:
+def build_inference_prompt(example, tokenizer) -> str:
+    """Build a prompt with only the user turn so the model must generate the answer."""
+    messages = [
+        {"role": "system", "content": instruction_prompt()},
+        {"role": "user", "content": user_prompt(
+            example.get("instruction", ""),
+            example.get("input", ""),
+        )},
+    ]
+    return tokenizer.apply_chat_template(
+        messages, tokenize=False, add_generation_prompt=True
+    )
+
+
+def evaluate(model, tokenizer, raw_dataset, n_samples: int) -> float:
     """Generate code for each sample and score by valid Python syntax."""
     FastLanguageModel.for_inference(model)
-    samples = dataset.select(range(min(n_samples, len(dataset))))
+
+    samples = raw_dataset.select(range(min(n_samples, len(raw_dataset))))
     points = 0
 
     for example in tqdm(samples, desc="Evaluating", leave=False):
+        prompt = build_inference_prompt(example, tokenizer)
         encodings = tokenizer(
-            example["text"], return_tensors="pt", truncation=True
+            prompt, return_tensors="pt", truncation=True
         ).to("cuda")
 
         with torch.no_grad():
             output_ids = model.generate(
                 **encodings,
-                max_new_tokens=256,
+                max_new_tokens=128,
+                do_sample=False,          # greedy — fastest + deterministic
                 use_cache=True,
                 pad_token_id=tokenizer.eos_token_id,
             )
@@ -57,23 +75,24 @@ def main():
     print("Loading base model and tokenizer...")
     model, tokenizer = FastLanguageModel.from_pretrained(**model_params)
 
-    print("Loading and formatting dataset...")
+    # Load raw dataset once — inference prompt is built on-the-fly in evaluate()
+    print("Loading dataset...")
     processor = DatasetProcessor(config, tokenizer)
-    dataset = processor.load_dataset()
-    dataset = processor.format_dataset(dataset)
-    dataset = dataset.filter(lambda ex: ex.get("id", 0) < n_samples)
+    raw_dataset = processor.load_dataset()
+    raw_dataset = raw_dataset.filter(lambda ex: ex.get("id", 0) < n_samples)
 
     scores = {}
 
     # --- Base model ---
-    print("\n[1/2] Benchmarking base model...")
-    scores["Base"] = evaluate(model, tokenizer, dataset, n_samples)
+    print(f"\n[1/2] Benchmarking base model on {len(raw_dataset)} samples...")
+    scores["Base"] = evaluate(model, tokenizer, raw_dataset, n_samples)
 
-    # --- Fine-tuned model (load local LoRA adapters onto the same base) ---
+    # --- Fine-tuned: attach local LoRA adapters to the already-loaded base ---
     if os.path.isdir(adapter_path):
         print(f"\n[2/2] Loading LoRA adapters from '{adapter_path}'...")
-        model = FastLanguageModel.get_peft_model(model, adapter_path)
-        scores["Fine-tuned"] = evaluate(model, tokenizer, dataset, n_samples)
+        model.load_adapter(adapter_path)
+        print(f"Benchmarking fine-tuned model on {len(raw_dataset)} samples...")
+        scores["Fine-tuned"] = evaluate(model, tokenizer, raw_dataset, n_samples)
     else:
         print(f"\n[2/2] Adapter path '{adapter_path}' not found — skipping fine-tuned eval.")
 
