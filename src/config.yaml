@@ -50,3 +50,6 @@ output:
   output_dir: "./output"
   save_dataset: false
   save_config: true
+
+benchmark:
+  n_samples: 500
