@@ -22,18 +22,17 @@ def run_benchmark(config, model, tokenizer, dataset):
     print(f"Running benchmark on {len(formatted_dataset)} examples...")
     points = 0
 
-    tokenized_inputs = list()
-    for i in range(len(formatted_dataset)):
-        encodings = tokenizer(formatted_dataset[i]['text'], return_tensors="pt").to('cuda:0')
-        tokenized_inputs.append(encodings['input_ids'])
-    for i in tqdm(range(max(2, len(tokenized_inputs)))):
-        response = model.generate(tokenized_inputs[i], max_new_tokens=1024)
-        print(type(response))
-        for id in response:
-            print(type(id))
-            print(id)
-        print(tokenizer.decode(response))
+    for i in tqdm(range(max(2, len(formatted_dataset)))):
+        encodings = tokenizer(formatted_dataset[i]['text'], return_tensors="pt").to('cuda')
 
+        response = model.generate(
+                **encodings, 
+                max_new_tokens=64,
+                use_cache=True,
+                pad_token_id=tokenizer.eos_token_id
+        )
+        generated_code = tokenizer.decode(response[0][encodings.input_ids.shape[1]:], skip_special_tokens=True)
+        print(generated_code)
     return points / len(formatted_dataset) * 100
 
 def main():
