@@ -27,8 +27,9 @@ def run_benchmark(config, model, tokenizer, dataset):
     for i in range(len(formatted_dataset)):
         encodings = tokenizer(formatted_dataset[i]['text'], return_tensors="pt").to('cuda:0')
         tokenized_inputs.append(encodings['input_ids'])
-    for i in tqdm(range(max(10, len(tokenized_inputs)))):
+    for i in tqdm(range(max(2, len(tokenized_inputs)))):
         response = model.generate(tokenized_inputs[i], streamer=text_streamer, max_new_tokens=1024)
+        print(type(response))
         print(response)
 
     return points / len(formatted_dataset) * 100
