@@ -22,7 +22,7 @@ def run_benchmark(config, model, tokenizer, dataset):
     print(f"Running benchmark on {len(formatted_dataset)} examples...")
     points = 0
 
-    for i in tqdm(range(max(2, len(formatted_dataset)))):
+    for i in tqdm(range(min(2, len(formatted_dataset)))):
         encodings = tokenizer(formatted_dataset[i]['text'], return_tensors="pt").to('cuda:0')
 
         response = model.generate(
