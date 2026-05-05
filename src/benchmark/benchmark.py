@@ -30,7 +30,7 @@ def run_benchmark(config, model, tokenizer, dataset):
     for i in tqdm(range(max(2, len(tokenized_inputs)))):
         response = model.generate(tokenized_inputs[i], streamer=text_streamer, max_new_tokens=1024)
         print(type(response))
-        print(response)
+        print(tokenizer.decode(response))
 
     return points / len(formatted_dataset) * 100
 
