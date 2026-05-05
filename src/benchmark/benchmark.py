@@ -23,7 +23,7 @@ def run_benchmark(config, model, tokenizer, dataset):
     points = 0
 
     for i in tqdm(range(min(2, len(formatted_dataset)))):
-        encodings = tokenizer(formatted_dataset[i]['text'], return_tensors="pt").to('cuda:0')
+        encodings = tokenizer(formatted_dataset[i]['text'], return_tensors="pt").to('cuda')
 
         response = model.generate(
                 **encodings, 
@@ -31,8 +31,8 @@ def run_benchmark(config, model, tokenizer, dataset):
                 use_cache=True,
                 pad_token_id=tokenizer.eos_token_id
         )
-        generated_code = tokenizer.decode(response[0][encodings.input_ids.shape[1]:], skip_special_tokens=True)
-        print(generated_code)
+        # generated_code = tokenizer.decode(response[0][encodings.input_ids.shape[1]:], skip_special_tokens=True)
+        # print(generated_code)
     return points / len(formatted_dataset) * 100
 
 def main():
