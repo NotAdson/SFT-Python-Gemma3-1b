@@ -20,10 +20,10 @@ training:
   lr_scheduler_type: "cosine"
   logging_steps: 10
   eval_strategy: "steps"
-  eval_steps: 250
+  eval_steps: 50
   save_strategy: "steps"
-  save_steps: 250
-  warmup_steps: 200
+  save_steps: 50
+  warmup_steps: 100
   num_train_epochs: 2
   max_steps: -1
   max_grad_norm: 1.0
