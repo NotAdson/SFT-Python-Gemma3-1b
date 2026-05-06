@@ -56,8 +56,7 @@ def evaluate(model, tokenizer, dataset) -> float:
         if check_syntax(generated):
             points += 1
 
-    if len(dataset) == 0:
-        return 0.0
+
     return points / len(dataset) * 100
 
 
