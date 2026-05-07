@@ -65,8 +65,8 @@ def main():
     adapter_path = config["output"]["output_dir"]
     n_samples = config.get("benchmark", {}).get("n_samples", 500)
 
-    model_name = "google/gemma-3-1b-it" # Using the gemma-3-1b-it from Google without quantization
-    load_in_4bit = False # We are going to make inference with the full model for testing it final capacity
+    model_name = config["model"]["name"]
+    load_in_4bit = config["model"].get("load_in_4bit", True)
 
     print("Loading base model and tokenizer using HuggingFace Transformers...")
     
