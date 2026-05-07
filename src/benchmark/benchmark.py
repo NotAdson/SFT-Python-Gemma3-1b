@@ -43,8 +43,8 @@ def evaluate(model, tokenizer, dataset) -> float:
         with torch.no_grad():
             output_ids = model.generate(
                 **encodings,
-                max_new_tokens=128,
-                do_sample=False,          # greedy — fastest + deterministic
+                max_new_tokens=1024,
+                do_sample=False,
                 use_cache=True,
                 pad_token_id=tokenizer.eos_token_id,
             )
